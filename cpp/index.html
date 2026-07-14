@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Interview Revision Guide — CrackEmbedded</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0B1120; --panel: #131C2E; --panel-2: #0F1726; --line: #1F2B41;
+            --text: #E6EDF6; --muted: #8595AD; --ch1: #22D3EE; --ch2: #F5B841;
+            --ch3: #4ADE80; --ch4: #A78BFA; --display: 'Space Grotesk', sans-serif;
+            --mono: 'JetBrains Mono', monospace; --body: 'Inter', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0 }
+        html { scroll-behavior: smooth }
+        body { background: var(--bg); color: var(--text); font-family: var(--body); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden }
+        a { color: inherit; text-decoration: none }
+        .wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px }
+        .banner { background: linear-gradient(120deg, #0B1120 0%, #13314A 55%, #1B4D63 100%); border-bottom: 1px solid var(--line); text-align: center; padding: 38px 24px 30px }
+        .banner h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 4.6vw, 46px); letter-spacing: -.5px }
+        .banner .tag { margin-top: 8px; font-family: var(--mono); font-size: clamp(12px, 1.6vw, 15px); color: #AFC6D6; letter-spacing: .5px }
+        .topnav { position: sticky; top: 0; z-index: 50; background: rgba(15, 24, 40, .94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line) }
+        .topnav .wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; padding-top: 0; padding-bottom: 0 }
+        .topnav a { font-family: var(--mono); font-size: 14px; color: #C4D2E4; padding: 15px 18px; position: relative; transition: color .15s }
+        .topnav a:hover, .topnav a:focus-visible { color: #fff }
+        .topnav a::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 9px; height: 2px; background: var(--ch1); transform: scaleX(0); transform-origin: left; transition: transform .18s }
+        .topnav a:hover::after, .topnav a.active::after { transform: scaleX(1) }
+        .topnav a.active { color: #fff }
+        
+        .qa-container { display: flex; gap: 40px; margin-top: 40px; align-items: flex-start; margin-bottom: 60px; }
+        .toc-sidebar { flex: 0 0 280px; position: sticky; top: 80px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; max-height: calc(100vh - 100px); overflow-y: auto; }
+        .toc-sidebar h4 { font-family: var(--mono); color: var(--ch1); font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin: 16px 0 8px; }
+        .toc-sidebar h4:first-child { margin-top: 0; }
+        .toc-sidebar a { display: block; color: var(--muted); font-size: 14px; padding: 6px 0; border-bottom: 1px solid transparent; transition: color 0.2s; }
+        .toc-sidebar a:hover { color: var(--text); }
+        .qa-content { flex: 1; min-width: 0; }
+        
+        .part-title { font-family: var(--display); font-size: 32px; color: var(--text); margin: 40px 0 20px; padding-bottom: 10px; border-bottom: 2px solid var(--ch2); }
+        .part-title span { color: var(--ch2); font-family: var(--mono); font-size: 14px; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .q-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 28px; margin-bottom: 24px; transition: transform 0.2s, border-color 0.2s; scroll-margin-top: 80px; }
+        .q-card:hover { border-color: var(--ch1); }
+        .q-title { font-family: var(--display); font-size: 22px; font-weight: 600; color: var(--text); margin: 0 0 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+        .q-ans { color: var(--muted); font-size: 15.5px; line-height: 1.7; }
+        .q-ans p { margin-bottom: 12px; }
+        
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h5 { font-family: var(--display); color: var(--ch1); font-size: 17px; margin-bottom: 8px; }
+        
+        .code-block { background: var(--panel-2); border: 1px solid var(--line); padding: 16px; border-radius: 8px; font-family: var(--mono); font-size: 13.5px; color: #a5b4fc; overflow-x: auto; margin: 12px 0 20px; line-height: 1.5; white-space: pre; }
+        .code-block .cmt { color: #6b7280; }
+        .code-block .kw { color: #f472b6; }
+        
+        table.cmp { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; background: var(--panel-2); border-radius: 8px; overflow: hidden; }
+        table.cmp th, table.cmp td { border: 1px solid var(--line); padding: 12px 16px; text-align: left; vertical-align: top; }
+        table.cmp th { background: rgba(255,255,255,0.05); font-family: var(--display); color: var(--text); }
+        
+        ul, ol { margin: 10px 0 16px 24px; }
+        li { margin-bottom: 6px; }
+        
+        .tip-box { background: rgba(245, 184, 65, 0.1); border: 1px solid rgba(245, 184, 65, 0.2); border-left: 4px solid var(--ch2); padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0 0; font-size: 14.5px; color: #fde68a; }
+        .tip-box strong { color: var(--ch2); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 6px; }
+
+        @media(max-width: 960px) {
+            .qa-container { flex-direction: column; gap: 20px; }
+            .toc-sidebar { position: static; max-height: none; width: 100%; margin-bottom: 0; padding: 20px; }
+            table.cmp { display: block; overflow-x: auto; white-space: nowrap; }
+        }
+        @media(max-width:640px) {
+            .topnav .wrap { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none }
+            .topnav .wrap::-webkit-scrollbar { display: none }
+            .topnav a { padding: 14px 14px; white-space: nowrap }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="banner">
+        <h1>Complete C++ Interview Revision</h1>
+        <div class="tag">Basic to Advanced • Modern C++ • Smart Pointers</div>
+    </div>
+
+    <nav class="topnav">
+        <div class="wrap">
+            <a href="../index.html">Home</a>
+            <a href="../c/index.html">C</a>
+            <a href="../embedded-c/index.html">Embedded C</a>
+            <a href="index.html" class="active">C++</a>
+            <a href="../protocols.html">Protocols</a>
+            <a href="../linux/index.html">Linux</a>
+            <a href="../rtos/index.html">RTOS</a>
+            <a href="../mcq/embedded-c.html">MCQs</a>
+            <a href="../interview/embedded.html">Interview</a>
+        </div>
+    </nav>
+
+    <div class="wrap qa-container">
+        <aside class="toc-sidebar">
+            <h4>Syllabus</h4>
+            <a href="#basics">C++ Basics</a>
+            <a href="#oop">OOP Concepts</a>
+            <a href="#constructors">Constructors & Destructors</a>
+            <a href="#operator-overloading">Operator Overloading</a>
+            <a href="#functions">Functions</a>
+            <a href="#memory">Memory Management</a>
+            <a href="#smart-pointers">Smart Pointers</a>
+            <a href="#virtual">Virtual Functions</a>
+            <a href="#inheritance">Inheritance</a>
+            <a href="#stl">STL</a>
+            <a href="#templates">Templates</a>
+            <a href="#exceptions">Exception Handling</a>
+            <a href="#move">Move Semantics</a>
+            <a href="#modern">Modern C++</a>
+            <a href="#multithreading">Multithreading</a>
+            <a href="#questions">Interview Questions</a>
+            <a href="#rapid">Rapid Revision</a>
+        </aside>
+
+        <main class="qa-content">
+
+            <div class="q-card" id="basics">
+                <h3 class="q-title">C++ Basics</h3>
+                <div class="q-ans">
+                    <div class="topic-group">
+                        <h5>History & Program Structure</h5>
+                        <p>Developed by Bjarne Stroustrup in 1979 as "C with Classes". Adds OOP, templates, and exception handling to C.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Namespaces</h5>
+                        <p>Prevents name conflicts by grouping entities (classes, functions, variables) under a specific name (e.g., <code>std::</code>). If two libraries have a <code>print()</code> function, namespaces keep them separate.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>cin / cout & References</h5>
+                        <p><code>cin</code> reads input, <code>cout</code> prints output using <code>&lt;&lt;</code> and <code>&gt;&gt;</code> operators.</p>
+                        <p><strong>References (<code>&</code>):</strong> An alias (another name) for an existing variable. Must be initialized when declared and cannot be changed to refer to something else. Safer than pointers (cannot be null).</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Type Casting & const/constexpr</h5>
+                        <p>C++ style casts: <code>static_cast</code> (normal conversion), <code>dynamic_cast</code> (safe downcasting in inheritance), <code>const_cast</code> (removing constness), <code>reinterpret_cast</code> (dangerous, low-level bit reinterpretation).</p>
+                        <p><strong>const:</strong> Value cannot be modified. <strong>constexpr:</strong> Value must be evaluated at compile-time (improves performance).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-card" id="oop">
+                <h3 class="q-title">OOP Concepts</h3>
+                <div class="q-ans">
+                    <ul>
+                        <li><strong>Class & Object:</strong> A class is a blueprint. An object is an instance of a class.</li>
+                        <li><strong>Encapsulation:</strong> Bundling data and functions into a single unit (class) and hiding the internal state using access modifiers (private/protected).</li>
+                        <li><strong>Abstraction:</strong> Hiding complex implementation details and showing only the essential features to the user (achieved via interfaces/abstract classes).</li>
+                        <li><strong>Inheritance:</strong> A class derives properties from another. Types: Single, Multiple (two base classes), Multilevel (A->B->C), Hierarchical (one base, many derived), Hybrid.</li>
+                        <li><strong>Polymorphism:</strong> "Many forms". <strong>Compile-time:</strong> Function & Operator overloading. <strong>Run-time:</strong> Virtual functions (Overriding).</li>
+                    </ul>
+                    <div class="topic-group">
+                        <h5>Association, Aggregation, Composition</h5>
+                        <p><strong>Association:</strong> General relationship (A uses B).<br>
+                        <strong>Aggregation:</strong> Weak relationship (A "has-a" B). If A is destroyed, B can still exist (e.g., Department and Teachers).<br>
+                        <strong>Composition:</strong> Strong relationship (A "owns-a" B). If A is destroyed, B is also destroyed (e.g., House and Rooms).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-card" id="constructors">
+                <h3 class="q-title">Constructors & Destructors</h3>
+                <div class="q-ans">
+                    <p>A constructor initializes an object. It has the same name as the class and no return type.</p>
+                    <ul>
+                        <li><strong>Default:</strong> Takes no arguments.</li>
+                        <li><strong>Parameterized:</strong> Takes arguments to initialize members.</li>
+                        <li><strong>Copy Constructor:</strong> Initializes an object using another object of the same class <code>MyClass(const MyClass& other)</code>.</li>
+                        <li><strong>Move Constructor:</strong> Transfers ownership of resources from a temporary (rvalue) object to a new object, avoiding deep copies <code>MyClass(MyClass&& other)</code>.</li>
+                        <li><strong>Delegating:</strong> A constructor calling another constructor in the same class.</li>
+                        <li><strong>Destructor (<code>~MyClass</code>):</strong> Called automatically when the object goes out of scope. Used to free resources.</li>
+                        <li><strong>Initialization List:</strong> Used to initialize const members, reference members, and base classes before the constructor body runs.</li>
+                        <li><strong>Explicit:</strong> Prevents the compiler from using a single-argument constructor for implicit type conversions.</li>
+                    </ul>
+                    <div class="tip-box"><strong>Rule of 3/5/0</strong><br>
+                    <strong>Rule of 3:</strong> If you write a Destructor, Copy Constructor, or Copy Assignment, you probably need all three.<br>
+                    <strong>Rule of 5:</strong> C++11 added Move Constructor and Move Assignment to the Rule of 3.<br>
+                    <strong>Rule of 0:</strong> Ideally, design classes so you don't need any of them (use smart pointers and standard containers).</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="operator-overloading">
+                <h3 class="q-title">Operator Overloading</h3>
+                <div class="q-ans">
+                    <p>Gives special meaning to standard operators (like <code>+</code>, <code>==</code>) for user-defined classes.</p>
+                    <ul>
+                        <li><strong>Rules:</strong> Cannot overload <code>.</code>, <code>::</code>, <code>sizeof</code>, <code>?:</code>. Cannot create new operators.</li>
+                        <li><strong>Unary/Binary:</strong> Unary operates on one operand (e.g., <code>++</code>), Binary operates on two (e.g., <code>+</code>).</li>
+                        <li><strong>Friend Operators:</strong> Overloading <code>&lt;&lt;</code> and <code>&gt;&gt;</code> (for cin/cout) must be done using <code>friend</code> functions because the left operand is <code>ostream/istream</code>, not your class.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="functions">
+                <h3 class="q-title">Functions</h3>
+                <div class="q-ans">
+                    <ul>
+                        <li><strong>Function Overloading:</strong> Functions with the same name but different parameters (number or type). Return type alone doesn't count.</li>
+                        <li><strong>Default Arguments:</strong> Must be assigned from right to left in the parameter list.</li>
+                        <li><strong>Inline Functions:</strong> Compiler expands the code at the call site. Good for small functions to save call overhead.</li>
+                        <li><strong>Templates:</strong> Write a function once that works for any data type <code>template &lt;typename T&gt;</code>.</li>
+                        <li><strong>Lambda Expressions:</strong> Anonymous inline functions. Syntax: <code>[capture](params) { body }</code>. Highly used with STL algorithms (e.g., <code>std::sort</code>).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="memory">
+                <h3 class="q-title">Memory Management</h3>
+                <div class="q-ans">
+                    <ul>
+                        <li><strong>new / delete:</strong> <code>new</code> allocates memory on the Heap and calls the constructor. <code>delete</code> calls the destructor and frees the memory.</li>
+                        <li><strong>new[] / delete[]:</strong> For arrays. Mismatching them (using <code>delete</code> on <code>new[]</code>) causes Undefined Behavior.</li>
+                        <li><strong>Placement new:</strong> Constructs an object at a pre-allocated memory address (useful in embedded systems).</li>
+                        <li><strong>Memory Leaks:</strong> Occurs when memory is allocated on the heap but not deleted.</li>
+                        <li><strong>RAII (Resource Acquisition Is Initialization):</strong> The most important idiom in C++. Tie the lifecycle of a resource (memory, file, mutex) to an object's scope. When the object goes out of scope, its destructor automatically frees the resource.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="smart-pointers">
+                <h3 class="q-title">Smart Pointers (Very Important)</h3>
+                <div class="q-ans">
+                    <p>Wrappers around raw pointers that automatically manage memory via RAII. Included in <code>&lt;memory&gt;</code>.</p>
+                    <table class="cmp">
+                        <tr><th>Pointer</th><th>Ownership</th><th>Copy?</th><th>Use Case</th></tr>
+                        <tr><td><strong>unique_ptr</strong></td><td>Exclusive</td><td>No (Move only)</td><td>Single owner. Best performance (zero overhead).</td></tr>
+                        <tr><td><strong>shared_ptr</strong></td><td>Shared</td><td>Yes</td><td>Multiple owners. Uses reference counting.</td></tr>
+                        <tr><td><strong>weak_ptr</strong></td><td>Non-owning</td><td>Yes</td><td>Used with <code>shared_ptr</code> to break circular dependencies.</td></tr>
+                    </table>
+                    <ul>
+                        <li><strong>make_unique / make_shared:</strong> Always prefer these over raw <code>new</code>. They are exception-safe and faster (especially <code>make_shared</code> which allocates the control block and object together).</li>
+                        <li><strong>Circular Dependency:</strong> If A has a <code>shared_ptr</code> to B, and B has a <code>shared_ptr</code> to A, the reference count never drops to 0. Memory leak! Fix: Make one a <code>weak_ptr</code>.</li>
+                        <li><strong>Custom Deleter:</strong> You can pass a custom function to delete the resource (e.g., closing a file instead of freeing memory).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="virtual">
+                <h3 class="q-title">Virtual Functions (Very Important)</h3>
+                <div class="q-ans">
+                    <p>Allows <strong>Runtime Polymorphism</strong> (dynamic binding). When a base class pointer points to a derived class object, calling a virtual function executes the derived class's version.</p>
+                    <ul>
+                        <li><strong>Pure Virtual Function:</strong> <code>virtual void draw() = 0;</code> Forces the derived class to implement it.</li>
+                        <li><strong>Abstract Class:</strong> A class with at least one pure virtual function. You cannot instantiate an abstract class.</li>
+                        <li><strong>vtable (Virtual Table):</strong> An array of function pointers created by the compiler for a class containing virtual functions.</li>
+                        <li><strong>vptr (Virtual Pointer):</strong> A hidden pointer inside the object that points to the vtable. Created at runtime when the constructor runs.</li>
+                        <li><strong>Virtual Destructor:</strong> ALWAYS make base class destructors virtual! Otherwise, deleting a derived object via a base pointer will only call the base destructor, causing a memory leak.</li>
+                        <li><strong>override & final:</strong> <code>override</code> tells the compiler to check if you are actually overriding a base function. <code>final</code> prevents a function from being overridden further, or a class from being inherited.</li>
+                        <li><strong>Object Slicing:</strong> Happens when a derived object is passed by value to a base object. The derived-specific data is "sliced" off. Always pass by reference or pointer.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="inheritance">
+                <h3 class="q-title">Inheritance</h3>
+                <div class="q-ans">
+                    <ul>
+                        <li><strong>Access Specifiers:</strong> Public (visible everywhere), Protected (visible in class and derived classes), Private (visible only in class).</li>
+                        <li><strong>Constructor Order:</strong> Base class constructor runs FIRST, then Derived. Destructor order is exact opposite (Derived, then Base).</li>
+                        <li><strong>Diamond Problem:</strong> Multiple inheritance where D inherits from B and C, and both B and C inherit from A. D gets two copies of A!</li>
+                        <li><strong>Virtual Inheritance:</strong> Solves the Diamond Problem by ensuring only one instance of the base class (A) is shared (<code>class B : virtual public A</code>).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="stl">
+                <h3 class="q-title">Standard Template Library (STL)</h3>
+                <div class="q-ans">
+                    <p>Provides ready-to-use data structures and algorithms.</p>
+                    <ul>
+                        <li><strong>vector:</strong> Dynamic array. Continuous memory. Fast random access. Slow insertion in the middle.</li>
+                        <li><strong>list:</strong> Doubly linked list. Fast insertion/deletion anywhere. Slow access.</li>
+                        <li><strong>deque:</strong> Double-ended queue. Fast insertion/deletion at both front and back.</li>
+                        <li><strong>map / set:</strong> Implemented as Red-Black Trees. Elements are sorted automatically. O(log n) lookup.</li>
+                        <li><strong>unordered_map:</strong> Implemented as Hash Tables. O(1) average lookup. Not sorted.</li>
+                        <li><strong>queue / stack:</strong> FIFO / LIFO container adaptors.</li>
+                        <li><strong>priority_queue:</strong> Implemented as a Heap. Keeps the largest/smallest element at the top.</li>
+                        <li><strong>Algorithms & Iterators:</strong> <code>std::sort</code>, <code>std::find</code>. Iterators bridge containers and algorithms securely.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="templates">
+                <h3 class="q-title">Templates & Exception Handling</h3>
+                <div class="q-ans">
+                    <div class="topic-group">
+                        <h5>Templates</h5>
+                        <p>Allows generic programming. <strong>Template Specialization:</strong> Providing a specific implementation for a particular data type (e.g., making a specialized template just for <code>char*</code>). <strong>Variadic Templates:</strong> Templates that accept a variable number of arguments.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Exception Handling</h5>
+                        <p><strong>try:</strong> Code that might fail. <strong>throw:</strong> Throws the error. <strong>catch:</strong> Handles the error.</p>
+                        <p><strong>noexcept:</strong> A promise that a function will not throw an exception. If it does, the program terminates immediately. Great for move constructors.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-card" id="move">
+                <h3 class="q-title">Move Semantics (C++11)</h3>
+                <div class="q-ans">
+                    <p>Before C++11, passing heavy objects by value resulted in expensive deep copies. Move semantics allow us to "steal" resources from temporary objects.</p>
+                    <ul>
+                        <li><strong>Lvalue vs Rvalue:</strong> Lvalue has a memory address (e.g., a variable). Rvalue is a temporary value (e.g., <code>5</code>, or the return of <code>a + b</code>).</li>
+                        <li><strong>std::move:</strong> Casts an lvalue to an rvalue reference (<code>&&</code>), telling the compiler: "I don't need this object anymore, you can steal its guts."</li>
+                        <li><strong>Move Constructor:</strong> Takes an rvalue reference <code>Class(Class&& other)</code>. Simply copies the pointers and sets the <code>other</code> pointers to null. Extremely fast!</li>
+                        <li><strong>Perfect Forwarding:</strong> Using <code>std::forward</code> in templates to preserve the lvalue/rvalue nature of arguments passed to another function.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="modern">
+                <h3 class="q-title">Modern C++ (C++11/14/17/20)</h3>
+                <div class="q-ans">
+                    <ul>
+                        <li><strong>auto:</strong> Compiler deduces the type automatically.</li>
+                        <li><strong>decltype:</strong> Extracts the type of an expression without evaluating it.</li>
+                        <li><strong>nullptr:</strong> Replaces <code>NULL</code>. It is a type-safe pointer literal, avoiding overload resolution bugs.</li>
+                        <li><strong>Range-based for:</strong> <code>for (const auto& item : vector)</code>. Clean and readable.</li>
+                        <li><strong>enum class:</strong> Strongly typed enums. Values don't implicitly convert to integers and don't leak into the surrounding scope.</li>
+                        <li><strong>Structured Bindings (C++17):</strong> <code>auto [x, y] = getCoordinates();</code> easily unpacks pairs, tuples, or structs.</li>
+                        <li><strong>consteval (C++20):</strong> Strictly forces a function to run at compile-time (unlike <code>constexpr</code> which can fall back to runtime).</li>
+                        <li><strong>Concepts (C++20):</strong> Allows constraints on template parameters (e.g., <code>template &lt;Integral T&gt;</code>).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="multithreading">
+                <h3 class="q-title">Multithreading (C++11)</h3>
+                <div class="q-ans">
+                    <ul>
+                        <li><strong>std::thread:</strong> Spawns a new hardware thread. Must call <code>.join()</code> (wait to finish) or <code>.detach()</code> (run independently).</li>
+                        <li><strong>std::mutex:</strong> Prevents race conditions by allowing only one thread to access shared data at a time.</li>
+                        <li><strong>std::lock_guard:</strong> RAII wrapper for a mutex. Locks on creation, unlocks on destruction. Exception safe!</li>
+                        <li><strong>std::unique_lock:</strong> Like lock_guard, but you can manually lock/unlock it, and use it with condition variables.</li>
+                        <li><strong>std::condition_variable:</strong> Allows a thread to sleep and wait for an event/signal from another thread.</li>
+                        <li><strong>std::atomic:</strong> For simple types (like <code>int</code>), guarantees lock-free atomic operations.</li>
+                        <li><strong>std::future & std::promise:</strong> A way to return a result from a background thread asynchronously.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="questions">
+                <h3 class="q-title">Common Interview Questions</h3>
+                <div class="q-ans">
+                    <ul style="line-height: 1.8;">
+                        <li><strong>Copy constructor vs Assignment operator:</strong> Copy constructor is called when a NEW object is created from an existing one. Assignment operator is called when an EXISTING object is replaced by another.</li>
+                        <li><strong>Deep vs Shallow copy:</strong> Shallow copies only the pointer address (both point to the same memory). Deep copies allocate new memory and copy the actual values.</li>
+                        <li><strong>Virtual vs Pure virtual:</strong> Virtual has an implementation that CAN be overridden. Pure virtual (<code>= 0</code>) HAS NO implementation and MUST be overridden.</li>
+                        <li><strong>Override vs Overload:</strong> Overload is same function name, different parameters (compile-time). Override is same function name and parameters in a derived class (run-time).</li>
+                        <li><strong>Why does object slicing happen?</strong> Because base classes are smaller. Passing a derived object by value to a base class function chops off the extra derived bytes to fit into the base class size.</li>
+                        <li><strong>When is the vtable created?</strong> The vtable is created by the compiler at compile-time. The vptr is initialized at run-time during object construction.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="rapid" style="border-color: var(--ch3);">
+                <h3 class="q-title" style="color: var(--ch3);">Rapid Revision Checklist</h3>
+                <div class="q-ans">
+                    <ul style="margin-left: 20px;">
+                        <li><strong>Prefer smart pointers over raw pointers.</strong></li>
+                        <li><strong>Base class destructor MUST be virtual.</strong></li>
+                        <li><strong>Pass heavy objects by const reference</strong> (e.g., <code>const std::string&</code>).</li>
+                        <li><strong>Always use the <code>override</code> keyword</strong> for virtual functions to catch typos.</li>
+                        <li><strong>Prefer <code>std::make_unique</code> and <code>std::make_shared</code></strong> over <code>new</code>.</li>
+                        <li><strong>Avoid cyclic <code>shared_ptr</code> references</strong> by using <code>weak_ptr</code>.</li>
+                        <li><strong>Use RAII for all resources</strong> (Memory, File handles, Mutex locks).</li>
+                    </ul>
+
+                    <div class="code-block" style="border-color: var(--ch3);">
+<span class="cmt">// VIRTUAL FUNCTION KEYWORDS CHEAT SHEET</span>
+virtual    <span class="cmt">// enables runtime polymorphism</span>
+override   <span class="cmt">// compiler strictly checks if overriding exists</span>
+final      <span class="cmt">// prevents overriding/inheritance</span>
+= 0        <span class="cmt">// pure virtual function (makes class abstract)</span></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="wrap" style="border-top: 1px solid var(--line); padding: 36px 0; font-family: var(--mono); font-size: 13px; color: var(--muted)">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px">
+            <span>© 2026 CrackEmbedded · C++ Revision Guide</span>
+            <span><a href="https://github.com/kundantirex" target="_blank" rel="noopener">github.com/kundantirex</a></span>
+        </div>
+    </footer>
+
+</body>
+</html>

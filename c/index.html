@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C Programming Revision Notes — CrackEmbedded</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0B1120; --panel: #131C2E; --panel-2: #0F1726; --line: #1F2B41;
+            --text: #E6EDF6; --muted: #8595AD; --ch1: #22D3EE; --ch2: #F5B841;
+            --ch3: #4ADE80; --ch4: #A78BFA; --display: 'Space Grotesk', sans-serif;
+            --mono: 'JetBrains Mono', monospace; --body: 'Inter', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0 }
+        html { scroll-behavior: smooth }
+        body { background: var(--bg); color: var(--text); font-family: var(--body); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden }
+        a { color: inherit; text-decoration: none }
+        .wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px }
+        .banner { background: linear-gradient(120deg, #0B1120 0%, #13314A 55%, #1B4D63 100%); border-bottom: 1px solid var(--line); text-align: center; padding: 38px 24px 30px }
+        .banner h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 4.6vw, 46px); letter-spacing: -.5px }
+        .banner .tag { margin-top: 8px; font-family: var(--mono); font-size: clamp(12px, 1.6vw, 15px); color: #AFC6D6; letter-spacing: .5px }
+        .topnav { position: sticky; top: 0; z-index: 50; background: rgba(15, 24, 40, .94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line) }
+        .topnav .wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; padding-top: 0; padding-bottom: 0 }
+        .topnav a { font-family: var(--mono); font-size: 14px; color: #C4D2E4; padding: 15px 18px; position: relative; transition: color .15s }
+        .topnav a:hover, .topnav a:focus-visible { color: #fff }
+        .topnav a::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 9px; height: 2px; background: var(--ch1); transform: scaleX(0); transform-origin: left; transition: transform .18s }
+        .topnav a:hover::after, .topnav a.active::after { transform: scaleX(1) }
+        .topnav a.active { color: #fff }
+        
+        .qa-container { display: flex; gap: 40px; margin-top: 40px; align-items: flex-start; margin-bottom: 60px; }
+        .toc-sidebar { flex: 0 0 280px; position: sticky; top: 80px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; max-height: calc(100vh - 100px); overflow-y: auto; }
+        .toc-sidebar h4 { font-family: var(--mono); color: var(--ch1); font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin: 16px 0 8px; }
+        .toc-sidebar h4:first-child { margin-top: 0; }
+        .toc-sidebar a { display: block; color: var(--muted); font-size: 14px; padding: 6px 0; border-bottom: 1px solid transparent; transition: color 0.2s; }
+        .toc-sidebar a:hover { color: var(--text); }
+        .qa-content { flex: 1; min-width: 0; }
+        
+        .part-title { font-family: var(--display); font-size: 32px; color: var(--text); margin: 40px 0 20px; padding-bottom: 10px; border-bottom: 2px solid var(--ch2); }
+        .part-title span { color: var(--ch2); font-family: var(--mono); font-size: 14px; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .q-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 28px; margin-bottom: 24px; transition: transform 0.2s, border-color 0.2s; scroll-margin-top: 80px; }
+        .q-card:hover { border-color: var(--ch1); }
+        .q-title { font-family: var(--display); font-size: 22px; font-weight: 600; color: var(--text); margin: 0 0 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+        .q-ans { color: var(--muted); font-size: 15.5px; line-height: 1.7; }
+        .q-ans p { margin-bottom: 12px; }
+        
+        .topic-group { margin-bottom: 20px; }
+        .topic-group h5 { font-family: var(--display); color: var(--ch1); font-size: 17px; margin-bottom: 8px; }
+        
+        .code-block { background: var(--panel-2); border: 1px solid var(--line); padding: 16px; border-radius: 8px; font-family: var(--mono); font-size: 13.5px; color: #a5b4fc; overflow-x: auto; margin: 12px 0 20px; line-height: 1.5; white-space: pre; }
+        .code-block .cmt { color: #6b7280; }
+        .code-block .kw { color: #f472b6; }
+        
+        table.cmp { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; background: var(--panel-2); border-radius: 8px; overflow: hidden; }
+        table.cmp th, table.cmp td { border: 1px solid var(--line); padding: 12px 16px; text-align: left; vertical-align: top; }
+        table.cmp th { background: rgba(255,255,255,0.05); font-family: var(--display); color: var(--text); }
+        
+        ul, ol { margin: 10px 0 16px 24px; }
+        li { margin-bottom: 6px; }
+        
+        @media(max-width: 960px) {
+            .qa-container { flex-direction: column; gap: 20px; }
+            .toc-sidebar { position: static; max-height: none; width: 100%; margin-bottom: 0; padding: 20px; }
+            table.cmp { display: block; overflow-x: auto; white-space: nowrap; }
+        }
+        @media(max-width:640px) {
+            .topnav .wrap { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none }
+            .topnav .wrap::-webkit-scrollbar { display: none }
+            .topnav a { padding: 14px 14px; white-space: nowrap }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="banner">
+        <h1>Complete C Programming Revision</h1>
+        <div class="tag">Basic to Advanced • Fast Understanding • Code Examples</div>
+    </div>
+
+    <nav class="topnav">
+        <div class="wrap">
+            <a href="../index.html">Home</a>
+            <a href="index.html" class="active">C</a>
+            <a href="../embedded-c/index.html">Embedded C</a>
+            <a href="../cpp/index.html">C++</a>
+            <a href="../protocols.html">Protocols</a>
+            <a href="../linux/index.html">Linux</a>
+            <a href="../rtos/index.html">RTOS</a>
+            <a href="../mcq/embedded-c.html">MCQs</a>
+            <a href="../interview/embedded.html">Interview</a>
+        </div>
+    </nav>
+
+    <div class="wrap qa-container">
+        <aside class="toc-sidebar">
+            <h4>Syllabus</h4>
+            <a href="#basics">Basics</a>
+            <a href="#operators">Operators</a>
+            <a href="#control">Control Statements</a>
+            <a href="#functions">Functions</a>
+            <a href="#storage">Storage Classes</a>
+            <a href="#arrays">Arrays & Strings</a>
+            <a href="#pointers">Pointers</a>
+            <a href="#structs">Structures, Unions, Enum</a>
+            <a href="#memory">Memory Management</a>
+            <a href="#preprocessor">Preprocessor</a>
+            <a href="#file">File Handling</a>
+            <a href="#bitwise">Bit Manipulation</a>
+            <a href="#advanced">Advanced C</a>
+            <a href="#programs">Common Interview Programs</a>
+            <a href="#questions">FAQ Interview Questions</a>
+            <a href="#rapid">Rapid Revision</a>
+        </aside>
+
+        <main class="qa-content">
+
+            <div class="q-card" id="basics">
+                <h3 class="q-title">Basics of C</h3>
+                <div class="q-ans">
+                    <div class="topic-group">
+                        <h5>Structure of a C program</h5>
+                        <p>A C program typically contains: Preprocessor Directives (<code>#include</code>), Global Variables, <code>int main()</code> function, and other User-Defined Functions.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Tokens, Keywords, Identifiers</h5>
+                        <p><strong>Token:</strong> The smallest individual unit in a C program (e.g., keywords, identifiers, constants).<br>
+                        <strong>Keyword:</strong> Reserved words with fixed meaning (e.g., <code>int</code>, <code>return</code>, <code>if</code>). C has 32 standard keywords.<br>
+                        <strong>Identifier:</strong> User-defined names for variables, functions, arrays. Must start with a letter or underscore.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Data Types & Modifiers</h5>
+                        <p><strong>Basic types:</strong> <code>char</code> (1 byte), <code>int</code> (4 bytes), <code>float</code> (4 bytes), <code>double</code> (8 bytes), <code>void</code> (empty).<br>
+                        <strong>Modifiers:</strong> <code>signed</code> (can be negative), <code>unsigned</code> (positive only, extends range), <code>short</code> (2 bytes), <code>long</code> (8 bytes).</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Input/Output & Format Specifiers</h5>
+                        <p><code>printf()</code> displays output. <code>scanf()</code> reads input from the user.<br>
+                        <strong>Format Specifiers:</strong> <code>%d</code> (int), <code>%f</code> (float), <code>%c</code> (char), <code>%s</code> (string), <code>%x</code> (hexadecimal), <code>%p</code> (pointer).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-card" id="operators">
+                <h3 class="q-title">Operators</h3>
+                <div class="q-ans">
+                    <p>Operators perform operations on variables and values.</p>
+                    <ul>
+                        <li><strong>Arithmetic:</strong> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code> (modulo/remainder).</li>
+                        <li><strong>Relational:</strong> <code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code> (returns 1 for true, 0 for false).</li>
+                        <li><strong>Logical:</strong> <code>&&</code> (Logical AND), <code>||</code> (Logical OR), <code>!</code> (Logical NOT).</li>
+                        <li><strong>Increment/Decrement:</strong> <code>++</code> (adds 1), <code>--</code> (subtracts 1). Can be pre (<code>++x</code>) or post (<code>x++</code>).</li>
+                        <li><strong>Bitwise:</strong> <code>&</code> (AND), <code>|</code> (OR), <code>^</code> (XOR), <code>~</code> (NOT), <code>&lt;&lt;</code> (Left Shift), <code>&gt;&gt;</code> (Right Shift).</li>
+                        <li><strong>Conditional (Ternary):</strong> <code>condition ? if_true : if_false</code>.</li>
+                        <li><strong>sizeof:</strong> Returns the size of a variable or data type in bytes.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="control">
+                <h3 class="q-title">Control Statements</h3>
+                <div class="q-ans">
+                    <p>Control statements change the normal sequential flow of execution.</p>
+                    <ul>
+                        <li><strong>if / if-else:</strong> Executes a block of code if the condition is true; else executes another block.</li>
+                        <li><strong>switch:</strong> Selects one of many blocks of code to be executed based on an integer/char value. Faster than many <code>if-else</code> chains.</li>
+                        <li><strong>for loop:</strong> Best when you know exactly how many times you want to loop. <code>for(init; condition; increment)</code></li>
+                        <li><strong>while loop:</strong> Best when you don't know the exact number of iterations. Checks condition before running.</li>
+                        <li><strong>do-while loop:</strong> Guaranteed to run at least once because the condition is checked at the end.</li>
+                        <li><strong>break:</strong> Exits the current loop or switch immediately.</li>
+                        <li><strong>continue:</strong> Skips the rest of the current loop iteration and moves to the next one.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="functions">
+                <h3 class="q-title">Functions</h3>
+                <div class="q-ans">
+                    <div class="topic-group">
+                        <h5>Declaration, Definition, Prototype</h5>
+                        <p><strong>Prototype (Declaration):</strong> Tells the compiler the function name, return type, and parameters before it is used. e.g. <code>int add(int, int);</code><br>
+                        <strong>Definition:</strong> The actual body and logic of the function.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Call by Value</h5>
+                        <p>Passing a copy of a variable to a function. Changing the variable inside the function does not change the original variable outside.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Recursion</h5>
+                        <p>When a function calls itself. It must have a "base case" to stop calling itself, otherwise it causes a Stack Overflow.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Inline Functions</h5>
+                        <p>Keyword <code>inline</code> requests the compiler to expand the function code exactly where it is called, saving function-call overhead. Good for very small, frequently used functions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-card" id="storage">
+                <h3 class="q-title">Storage Classes</h3>
+                <div class="q-ans">
+                    <table class="cmp">
+                        <tr><th>Class</th><th>Scope</th><th>Lifetime</th><th>Default Value</th></tr>
+                        <tr><td><strong>auto</strong></td><td>Local (Block)</td><td>Ends when block ends</td><td>Garbage</td></tr>
+                        <tr><td><strong>register</strong></td><td>Local</td><td>Ends when block ends</td><td>Garbage (stored in CPU reg)</td></tr>
+                        <tr><td><strong>static</strong></td><td>Local or File</td><td>Program ends</td><td>Zero (0)</td></tr>
+                        <tr><td><strong>extern</strong></td><td>Global</td><td>Program ends</td><td>Zero (0)</td></tr>
+                    </table>
+                    <p><strong>static local:</strong> Retains its value between function calls.<br>
+                    <strong>static global/function:</strong> Limits visibility of the variable/function to the current file only (private).</p>
+                </div>
+            </div>
+
+            <div class="q-card" id="arrays">
+                <h3 class="q-title">Arrays & Strings</h3>
+                <div class="q-ans">
+                    <div class="topic-group">
+                        <h5>Arrays</h5>
+                        <p>A collection of elements of the same data type stored in contiguous memory locations. When you pass an array to a function, it decays into a pointer to its first element (Call by Reference).</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Strings</h5>
+                        <p>A string in C is just a 1D character array terminated by a Null character (<code>'\0'</code>).</p>
+                        <p><strong>string.h functions:</strong> <code>strlen()</code> (length), <code>strcpy()</code> (copy), <code>strcat()</code> (append), <code>strcmp()</code> (compare).</p>
+                        <p><strong>char[] vs char*:</strong> <br><code>char str[] = "hello";</code> is stored in modifiable read-write memory (stack).<br>
+                        <code>char *str = "hello";</code> points to a read-only string literal in the data segment. Modifying it causes a segmentation fault.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-card" id="pointers">
+                <h3 class="q-title">Pointers</h3>
+                <div class="q-ans">
+                    <p>A pointer is a variable that stores the memory address of another variable.</p>
+                    <ul>
+                        <li><strong>Pointer arithmetic:</strong> Adding 1 to an <code>int *</code> increases the memory address by 4 bytes (the size of an int).</li>
+                        <li><strong>Void pointer (void *):</strong> A generic pointer that can point to any data type. Must be typecast before dereferencing.</li>
+                        <li><strong>NULL pointer:</strong> A pointer pointing to nothing (address 0).</li>
+                        <li><strong>Wild pointer:</strong> An uninitialized pointer that points to a random memory location.</li>
+                        <li><strong>Dangling pointer:</strong> A pointer that points to a memory location that has been deleted or freed.</li>
+                        <li><strong>Function pointer:</strong> Points to executable code (a function). Used for callbacks.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="structs">
+                <h3 class="q-title">Structures, Unions, Enum</h3>
+                <div class="q-ans">
+                    <div class="topic-group">
+                        <h5>Structures</h5>
+                        <p>Groups different data types under one name. <strong>Structure Padding:</strong> The compiler adds empty bytes between struct members to align them in memory for faster CPU access.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Unions</h5>
+                        <p>Similar to structures, but <strong>all members share the same memory location</strong>. The size of the union is the size of its largest member. You can only use one member at a time.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Bit Fields</h5>
+                        <p>Allows you to specify the exact number of bits a struct member should use, saving memory. e.g., <code>int flag : 1;</code> uses exactly 1 bit.</p>
+                    </div>
+                    <div class="topic-group">
+                        <h5>Enum (Enumeration)</h5>
+                        <p>A user-defined data type that consists of named integer constants. Improves code readability. Default starts at 0.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-card" id="memory">
+                <h3 class="q-title">Memory Management</h3>
+                <div class="q-ans">
+                    <table class="cmp">
+                        <tr><th>Concept</th><th>Explanation</th></tr>
+                        <tr><td><strong>Stack</strong></td><td>Automatic memory. Fast, limited size. Stores local variables and function calls (LIFO).</td></tr>
+                        <tr><td><strong>Heap</strong></td><td>Manual memory. Large size. Managed by the programmer using dynamic allocation.</td></tr>
+                        <tr><td><strong>malloc()</strong></td><td>Allocates a block of memory on the heap. Contains garbage values.</td></tr>
+                        <tr><td><strong>calloc()</strong></td><td>Allocates multiple blocks and initializes them to Zero.</td></tr>
+                        <tr><td><strong>realloc()</strong></td><td>Resizes previously allocated memory.</td></tr>
+                        <tr><td><strong>free()</strong></td><td>Releases allocated memory back to the system.</td></tr>
+                    </table>
+                    <p><strong>Memory Leak:</strong> Occurs when you allocate memory on the heap but forget to <code>free()</code> it before losing the pointer. The memory is wasted.</p>
+                </div>
+            </div>
+
+            <div class="q-card" id="preprocessor">
+                <h3 class="q-title">Preprocessor</h3>
+                <div class="q-ans">
+                    <p>Code that runs <em>before</em> compilation.</p>
+                    <ul>
+                        <li><code>#include</code>: Copies the contents of a header file into the source file.</li>
+                        <li><code>#define</code>: Defines a macro (a text replacement rule).</li>
+                        <li><strong>Macros vs Inline:</strong> Macros are dumb text replacement done by the preprocessor (can cause side effects like <code>MACRO(x++)</code>). Inline functions are type-checked by the compiler.</li>
+                        <li><strong>Conditional Compilation:</strong> <code>#ifdef</code>, <code>#ifndef</code>, <code>#endif</code>. Used to include/exclude parts of code based on conditions (e.g., debugging).</li>
+                        <li><strong>Header Guards:</strong> <code>#ifndef HEADER_H #define HEADER_H ... #endif</code> prevents a header file from being included multiple times in the same file.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="file">
+                <h3 class="q-title">File Handling</h3>
+                <div class="q-ans">
+                    <p>Allows C programs to read/write persistent data to the disk.</p>
+                    <ul>
+                        <li><code>fopen()</code>: Opens a file in read (r), write (w), or append (a) mode.</li>
+                        <li><code>fclose()</code>: Closes the file to save data and release resources.</li>
+                        <li><strong>Text vs Binary:</strong> Text files store human-readable ASCII. Binary files (mode "rb", "wb") store raw bytes (like structs or images), which is faster and smaller.</li>
+                        <li><code>fprintf() / fscanf()</code>: Write and read formatted text.</li>
+                        <li><code>fwrite() / fread()</code>: Write and read raw binary data blocks.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="bitwise">
+                <h3 class="q-title">Bit Manipulation (Essential for Embedded)</h3>
+                <div class="q-ans">
+                    <div class="code-block"><span class="cmt">// 1. SET a bit (make it 1)</span>
+REG |= (1 << n);
+
+<span class="cmt">// 2. CLEAR a bit (make it 0)</span>
+REG &= ~(1 << n);
+
+<span class="cmt">// 3. TOGGLE a bit (flip it)</span>
+REG ^= (1 << n);
+
+<span class="cmt">// 4. TEST a bit (check if 1)</span>
+if (REG & (1 << n)) { ... }
+
+<span class="cmt">// 5. Masking (Clear specific bits, keep others)</span>
+REG &= 0xF0; <span class="cmt">// clears lower 4 bits</span></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="advanced">
+                <h3 class="q-title">Advanced C Concepts</h3>
+                <div class="q-ans">
+                    <ul>
+                        <li><strong>const:</strong> Makes a variable read-only. <code>const int *p</code> (pointer to const value) vs <code>int * const p</code> (const pointer to value).</li>
+                        <li><strong>volatile:</strong> Tells the compiler the variable can change unpredictably (e.g., hardware register, ISR). Prevents compiler optimization.</li>
+                        <li><strong>restrict:</strong> A promise to the compiler that the pointer is the ONLY way to access that memory. Allows heavy optimization.</li>
+                        <li><strong>Endianness:</strong> Little-Endian stores the least significant byte first (Intel/ARM). Big-Endian stores the most significant byte first (Network protocols).</li>
+                        <li><strong>Undefined Behavior (UB):</strong> Code that the C standard does not define (e.g., dividing by zero, out-of-bounds array). The compiler can do literally anything (crash, format your drive).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="programs">
+                <h3 class="q-title">Common Interview Programs (Snippets)</h3>
+                <div class="q-ans">
+                    <div class="code-block"><span class="cmt">// SWAP WITHOUT TEMP</span>
+a = a ^ b;
+b = a ^ b;
+a = a ^ b;
+
+<span class="cmt">// REVERSE BITS OF A 32-BIT INTEGER</span>
+uint32_t rev = 0;
+for(int i=0; i<32; i++) {
+    if((num >> i) & 1) {
+        rev |= (1 << (31 - i));
+    }
+}
+
+<span class="cmt">// FIBONACCI (Iterative - faster than recursive)</span>
+int a = 0, b = 1, next;
+for(int i=2; i<n; i++) {
+    next = a + b;
+    a = b;
+    b = next;
+}
+
+<span class="cmt">// CHECK PALINDROME NUMBER</span>
+int rev = 0, temp = num;
+while(temp > 0) {
+    rev = rev * 10 + (temp % 10);
+    temp /= 10;
+}
+if(num == rev) // It is palindrome</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="questions">
+                <h3 class="q-title">Frequently Asked Interview Questions</h3>
+                <div class="q-ans">
+                    <ul style="line-height: 1.8;">
+                        <li><strong>malloc vs calloc:</strong> <code>malloc</code> allocates raw memory with garbage values. <code>calloc</code> allocates memory AND initializes it to zero.</li>
+                        <li><strong>static vs extern:</strong> <code>static</code> hides a variable inside its current file. <code>extern</code> tells the compiler the variable exists in another file.</li>
+                        <li><strong>struct vs union:</strong> Struct allocates separate memory for every member. Union allocates one shared block of memory equal to the largest member.</li>
+                        <li><strong>const vs volatile:</strong> <code>const</code> means "I won't change this". <code>volatile</code> means "Hardware might change this unexpectedly, don't cache it." They can be used together (e.g., read-only hardware status register).</li>
+                        <li><strong>Why main returns int?</strong> It returns an exit status to the Operating System. 0 means success, anything else means an error occurred.</li>
+                        <li><strong>What is a Segmentation Fault?</strong> An error caused by a program trying to access memory that it does not have permission to read/write (e.g., dereferencing a NULL or dangling pointer).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="q-card" id="rapid" style="border-color: var(--ch3);">
+                <h3 class="q-title" style="color: var(--ch3);">Rapid Revision & Essential Bit Tricks</h3>
+                <div class="q-ans">
+                    <div class="topic-group">
+                        <p><strong>ASCII Values to remember:</strong><br>
+                        'A' = 65, 'Z' = 90<br>
+                        'a' = 97, 'z' = 122<br>
+                        '0' = 48, '9' = 57</p>
+                    </div>
+                    <div class="code-block" style="border-color: var(--ch3);"><span class="cmt">// MAGIC BIT TRICKS YOU MUST MEMORIZE</span>
+
+x & 1               <span class="cmt">// Returns 1 if Odd, 0 if Even</span>
+x | (1 << n)        <span class="cmt">// SET the nth bit</span>
+x & ~(1 << n)       <span class="cmt">// CLEAR the nth bit</span>
+x ^ (1 << n)        <span class="cmt">// TOGGLE the nth bit</span>
+(x >> n) & 1        <span class="cmt">// TEST the nth bit (returns 0 or 1)</span>
+
+x & (x - 1)         <span class="cmt">// CLEARS the lowest set bit (e.g. 1010 -> 1000)</span>
+(x & (x - 1)) == 0  <span class="cmt">// CHECKS if x is a Power of 2 (if x > 0)</span></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="wrap" style="border-top: 1px solid var(--line); padding: 36px 0; font-family: var(--mono); font-size: 13px; color: var(--muted)">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px">
+            <span>© 2026 CrackEmbedded · C Programming Guide</span>
+            <span><a href="https://github.com/kundantirex" target="_blank" rel="noopener">github.com/kundantirex</a></span>
+        </div>
+    </footer>
+
+</body>
+</html>

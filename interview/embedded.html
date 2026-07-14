@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded Interview Q&A — CrackEmbedded</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0B1120; --panel: #131C2E; --panel-2: #0F1726; --line: #1F2B41;
+            --text: #E6EDF6; --muted: #8595AD; --ch1: #22D3EE; --ch2: #F5B841;
+            --ch3: #4ADE80; --ch4: #A78BFA; --display: 'Space Grotesk', sans-serif;
+            --mono: 'JetBrains Mono', monospace; --body: 'Inter', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0 }
+        html { scroll-behavior: smooth }
+        body { background: var(--bg); color: var(--text); font-family: var(--body); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden }
+        a { color: inherit; text-decoration: none }
+        .wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px }
+        .banner { background: linear-gradient(120deg, #0B1120 0%, #13314A 55%, #1B4D63 100%); border-bottom: 1px solid var(--line); text-align: center; padding: 38px 24px 30px }
+        .banner h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 4.6vw, 46px); letter-spacing: -.5px }
+        .banner .tag { margin-top: 8px; font-family: var(--mono); font-size: clamp(12px, 1.6vw, 15px); color: #AFC6D6; letter-spacing: .5px }
+        .topnav { position: sticky; top: 0; z-index: 50; background: rgba(15, 24, 40, .94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line) }
+        .topnav .wrap { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; padding-top: 0; padding-bottom: 0 }
+        .topnav a { font-family: var(--mono); font-size: 14px; color: #C4D2E4; padding: 15px 18px; position: relative; transition: color .15s }
+        .topnav a:hover, .topnav a:focus-visible { color: #fff }
+        .topnav a::after { content: ""; position: absolute; left: 18px; right: 18px; bottom: 9px; height: 2px; background: var(--ch1); transform: scaleX(0); transform-origin: left; transition: transform .18s }
+        .topnav a:hover::after, .topnav a.active::after { transform: scaleX(1) }
+        .topnav a.active { color: #fff }
+        
+        .qa-container { display: flex; gap: 40px; margin-top: 40px; align-items: flex-start; margin-bottom: 60px; }
+        .toc-sidebar { flex: 0 0 280px; position: sticky; top: 80px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; max-height: calc(100vh - 100px); overflow-y: auto; }
+        .toc-sidebar h4 { font-family: var(--mono); color: var(--ch1); font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin: 16px 0 8px; }
+        .toc-sidebar h4:first-child { margin-top: 0; }
+        .toc-sidebar a { display: block; color: var(--muted); font-size: 14px; padding: 6px 0; border-bottom: 1px solid transparent; transition: color 0.2s; }
+        .toc-sidebar a:hover { color: var(--text); }
+        .qa-content { flex: 1; min-width: 0; }
+        
+        .part-title { font-family: var(--display); font-size: 32px; color: var(--text); margin: 40px 0 20px; padding-bottom: 10px; border-bottom: 2px solid var(--ch2); }
+        .part-title span { color: var(--ch2); font-family: var(--mono); font-size: 14px; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .q-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 28px; margin-bottom: 24px; transition: transform 0.2s, border-color 0.2s; scroll-margin-top: 80px; }
+        .q-card:hover { border-color: var(--ch1); }
+        .q-title { font-family: var(--display); font-size: 22px; font-weight: 600; color: var(--text); margin: 0 0 16px; display: flex; align-items: baseline; gap: 12px; }
+        .q-num { font-family: var(--mono); font-size: 14px; background: var(--ch1); color: var(--bg); padding: 2px 8px; border-radius: 6px; font-weight: 700; }
+        .q-ans { color: var(--muted); font-size: 15.5px; line-height: 1.7; }
+        .q-ans p { margin-bottom: 12px; }
+        
+        .example-box { margin: 16px 0; padding-left: 16px; border-left: 3px solid var(--ch3); color: #d1d5db; }
+        .example-box strong { color: var(--ch3); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px; }
+        
+        .tip-box { background: rgba(245, 184, 65, 0.1); border: 1px solid rgba(245, 184, 65, 0.2); border-left: 4px solid var(--ch2); padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0 0; font-size: 14.5px; color: #fde68a; }
+        .tip-box strong { color: var(--ch2); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 6px; }
+        
+        .code-block { background: var(--panel-2); border: 1px solid var(--line); padding: 16px; border-radius: 8px; font-family: var(--mono); font-size: 13.5px; color: #a5b4fc; overflow-x: auto; margin: 16px 0; line-height: 1.5; white-space: pre; }
+        .code-block .cmt { color: #6b7280; }
+        
+        table.cmp { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; background: var(--panel-2); border-radius: 8px; overflow: hidden; }
+        table.cmp th, table.cmp td { border: 1px solid var(--line); padding: 12px 16px; text-align: left; vertical-align: top; }
+        table.cmp th { background: rgba(255,255,255,0.05); font-family: var(--display); color: var(--text); }
+        
+        .sub-sec { margin-bottom: 30px; }
+        .sub-sec h4 { font-family: var(--display); color: var(--ch1); font-size: 20px; margin-bottom: 12px; }
+        
+        @media(max-width: 960px) {
+            .qa-container { flex-direction: column; gap: 20px; }
+            .toc-sidebar { position: static; max-height: none; width: 100%; margin-bottom: 0; padding: 20px; }
+            table.cmp { display: block; overflow-x: auto; white-space: nowrap; }
+        }
+        @media(max-width:640px) {
+            .topnav .wrap { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none }
+            .topnav .wrap::-webkit-scrollbar { display: none }
+            .topnav a { padding: 14px 14px; white-space: nowrap }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="banner">
+        <h1>30 Embedded Firmware Q&A</h1>
+        <div class="tag">Complete Edition — Part 1 (Basics) + Part 2 (Advanced)</div>
+    </div>
+
+    <nav class="topnav">
+        <div class="wrap">
+            <a href="../index.html">Home</a>
+            <a href="../c/index.html">C</a>
+            <a href="../embedded-c/index.html">Embedded C</a>
+            <a href="../cpp/index.html">C++</a>
+            <a href="../protocols.html">Protocols</a>
+            <a href="../linux/index.html">Linux</a>
+            <a href="../rtos/index.html">RTOS</a>
+            <a href="../mcq/embedded-c.html">MCQs</a>
+            <a href="embedded.html" class="active">Interview</a>
+        </div>
+    </nav>
+
+    <div class="wrap qa-container">
+        <aside class="toc-sidebar">
+            <h4>Part 1: Basics</h4>
+            <a href="#q1">1. Embedded System & Firmware</a>
+            <a href="#q4">4. MCUs & MPUs</a>
+            <a href="#q6">6. GPIO & Interrupts</a>
+            <a href="#q9">9. Timers & PWM</a>
+            <a href="#q11">11. UART, SPI, I2C</a>
+            <a href="#q14">14. ADC, DAC, DMA</a>
+            <a href="#q17">17. Watchdog & Memory</a>
+            <a href="#q21">21. Stack, Heap & Keywords</a>
+            <a href="#q25">25. State Machines & ISRs</a>
+            <a href="#q27">27. Bootloader & RTOS</a>
+            
+            <h4>Part 2: Advanced</h4>
+            <a href="#p2-a">A. Communication Protocols</a>
+            <a href="#p2-b">B. Core Peripherals</a>
+            <a href="#p2-c">C. CPU Efficiency</a>
+            <a href="#p2-d">D. Bootloader & FW Update</a>
+            <a href="#p2-e">E. RTOS & Scheduling</a>
+            <a href="#p2-f">F. Linux Device Drivers</a>
+            
+            <h4>Summary</h4>
+            <a href="#strategy">Quick Revision Strategy</a>
+        </aside>
+
+        <main class="qa-content">
+            <div class="tip-box" style="margin-top: 0; margin-bottom: 30px;">
+                <strong>How to use this guide</strong>
+                Read the plain answer first, then the example. In the interview, speak 2–3 lines, then give one concrete example — that is what impresses.
+            </div>
+
+            <h2 class="part-title" id="part1"><span>Part 1</span> 30 Core Questions</h2>
+
+            <div class="q-card" id="q1">
+                <h3 class="q-title"><span class="q-num">01</span> What is an Embedded System?</h3>
+                <div class="q-ans">
+                    <p>A small computer built to do ONE specific job inside a bigger product. It is not a general PC — you cannot install random software on it. It quietly runs the same task forever.</p>
+                    <div class="example-box"><strong>Examples</strong>Washing machine controller, car engine ECU, smart watch, and your Tirex EV charger — all are embedded systems.</div>
+                    <div class="tip-box"><strong>Interview tip</strong>Contrast it with a PC: 'A PC does many things; an embedded system does one thing reliably.' That one line usually lands well.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q2">
+                <h3 class="q-title"><span class="q-num">02</span> What is Firmware?</h3>
+                <div class="q-ans">
+                    <p>Firmware is the software that lives permanently inside the chip's non-volatile memory (Flash) and directly controls the hardware. It stays even after power off. 'Firm' = between hardware and normal software.</p>
+                    <div class="example-box"><strong>Example</strong>The code you flash into an ARM Cortex-M that decides when to turn on a relay is firmware.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q3">
+                <h3 class="q-title"><span class="q-num">03</span> Difference between Hardware and Software?</h3>
+                <div class="q-ans">
+                    <p>Hardware is the physical part you can touch (chip, PCB, resistor). Software is the set of instructions that tells the hardware what to do. Hardware is the body, software is the brain telling it to move.</p>
+                </div>
+            </div>
+
+            <div class="q-card" id="q4">
+                <h3 class="q-title"><span class="q-num">04</span> What is a Microcontroller?</h3>
+                <div class="q-ans">
+                    <p>A microcontroller (MCU) is a full tiny computer on a single chip. Inside one chip it has CPU + memory (RAM/Flash) + peripherals (GPIO, UART, ADC, timers). You add power and a few components and it runs.</p>
+                    <div class="example-box"><strong>Example</strong>STM32, MSPM0, i.MX RT — all are MCUs used in EV chargers.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q5">
+                <h3 class="q-title"><span class="q-num">05</span> Microcontroller vs Microprocessor?</h3>
+                <div class="q-ans">
+                    <table class="cmp">
+                        <tr>
+                            <th>Feature</th>
+                            <th>Microcontroller (MCU)</th>
+                            <th>Microprocessor (MPU)</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Architecture</strong></td>
+                            <td>CPU + RAM + Flash + peripherals on ONE chip</td>
+                            <td>Only CPU on chip</td>
+                        </tr>
+                        <tr>
+                            <td><strong>External Memory</strong></td>
+                            <td>Needs external RAM/Flash? No</td>
+                            <td>Needs external RAM, Flash, peripherals</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Use Case</strong></td>
+                            <td>Low power, low cost, real-time</td>
+                            <td>High performance, runs an OS (Linux)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Examples</strong></td>
+                            <td>STM32, MSPM0</td>
+                            <td>i.MX93, Raspberry Pi CPU</td>
+                        </tr>
+                    </table>
+                    <div class="tip-box"><strong>Interview tip</strong>You can say: 'MCU is self-contained; MPU needs external memory but gives more power, like the i.MX93 running Linux.'</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q6">
+                <h3 class="q-title"><span class="q-num">06</span> What is GPIO?</h3>
+                <div class="q-ans">
+                    <p>GPIO = General Purpose Input Output pins. Each pin can either READ a digital signal (button, sensor = input) or DRIVE a digital signal (LED, relay = output). Only two states: HIGH (1) or LOW (0).</p>
+                    <div class="code-block"><span class="cmt">// Set pin as output, then drive it HIGH</span>
+gpio_set_direction(LED_PIN, OUTPUT);
+gpio_write(LED_PIN, HIGH);   <span class="cmt">// LED ON</span>
+gpio_write(LED_PIN, LOW);    <span class="cmt">// LED OFF</span></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q7">
+                <h3 class="q-title"><span class="q-num">07</span> What is an Interrupt?</h3>
+                <div class="q-ans">
+                    <p>An interrupt is an urgent signal that tells the CPU: 'Stop what you are doing, handle this NOW, then go back.' The special function that runs is called the ISR (see Q26).</p>
+                    <div class="example-box"><strong>Real-life analogy</strong>You are reading a book (main code). The phone rings (interrupt). You pause, answer it (ISR), then continue reading from the same line.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q8">
+                <h3 class="q-title"><span class="q-num">08</span> Polling vs Interrupt?</h3>
+                <div class="q-ans">
+                    <p>Polling = CPU keeps checking again and again 'is it ready? is it ready?' — wastes CPU time. Interrupt = CPU does other work and is notified only when the event actually happens — efficient.</p>
+                    <div class="code-block"><span class="cmt">// POLLING</span>
+while (1) {
+  if (button_pressed())   <span class="cmt">// checked continuously</span>
+    do_action();
+}
+
+<span class="cmt">// INTERRUPT - runs ONLY when button is pressed</span>
+void button_ISR(void) {
+  do_action();
+}</div>
+                    <div class="tip-box"><strong>Interview tip</strong>Say: 'Polling is simple but wastes power; interrupt is efficient — important in low-power battery devices.'</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q9">
+                <h3 class="q-title"><span class="q-num">09</span> What is a Timer?</h3>
+                <div class="q-ans">
+                    <p>A timer is a peripheral that counts clock pulses. Because the clock speed is fixed, counting pulses = measuring time. Used for delays, timeouts, and generating events at fixed intervals (periodic interrupts).</p>
+                    <div class="example-box"><strong>Example</strong>Blink an LED every 1 second, or send charger status every 10 seconds — a timer handles the timing accurately without blocking the CPU.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q10">
+                <h3 class="q-title"><span class="q-num">10</span> What is PWM?</h3>
+                <div class="q-ans">
+                    <p>PWM = Pulse Width Modulation. It is a square wave that switches ON and OFF very fast. By changing how long it stays ON (the 'duty cycle'), you control the average power delivered.</p>
+                    <div class="example-box"><strong>Example</strong>50% duty = ON half the time = half brightness/speed. 20% duty = dim LED or slow motor.</div>
+                    <div class="code-block">set_pwm_duty(LED, 50);   <span class="cmt">// 50% -> half brightness</span>
+set_pwm_duty(MOTOR, 80); <span class="cmt">// 80% -> fast speed</span></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q11">
+                <h3 class="q-title"><span class="q-num">11</span> What is UART?</h3>
+                <div class="q-ans">
+                    <p>UART = Universal Asynchronous Receiver Transmitter. A simple 2-wire serial protocol (TX to send, RX to receive). 'Asynchronous' means no separate clock wire — both sides just agree on a speed called baud rate (e.g. 115200).</p>
+                    <div class="example-box"><strong>Example</strong>Sending debug logs from your MCU to a PC terminal uses UART.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q12">
+                <h3 class="q-title"><span class="q-num">12</span> Difference between UART and SPI?</h3>
+                <div class="q-ans">
+                    <table class="cmp">
+                        <tr><th>Feature</th><th>UART</th><th>SPI</th></tr>
+                        <tr><td><strong>Clock</strong></td><td>Asynchronous (no clock wire)</td><td>Synchronous (has clock, SCLK)</td></tr>
+                        <tr><td><strong>Wires</strong></td><td>2 wires: TX, RX</td><td>4 wires: MOSI, MISO, SCLK, CS</td></tr>
+                        <tr><td><strong>Speed/Distance</strong></td><td>Slower, longer distance</td><td>Very fast, short distance</td></tr>
+                        <tr><td><strong>Topology</strong></td><td>1-to-1 device</td><td>1 master, many slaves via CS</td></tr>
+                    </table>
+                    <div class="tip-box"><strong>Interview tip</strong>Memory hook: UART is for talking to a PC/modem; SPI is for fast chips like flash and displays.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q13">
+                <h3 class="q-title"><span class="q-num">13</span> What is I2C?</h3>
+                <div class="q-ans">
+                    <p>I2C = a 2-wire serial protocol: SDA (data) and SCL (clock). Many devices share the same 2 wires, and each device has a unique address. Great when you have several sensors and want to save pins.</p>
+                    <div class="example-box"><strong>Example</strong>A temperature sensor, an RTC, and an EEPROM can all sit on the same two I2C wires, each answered by its address.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q14">
+                <h3 class="q-title"><span class="q-num">14</span> What is ADC?</h3>
+                <div class="q-ans">
+                    <p>ADC = Analog to Digital Converter. The real world is analog (voltage, temperature, current). The CPU only understands numbers. ADC converts an analog voltage into a digital number the code can use.</p>
+                    <div class="code-block">uint16_t raw = adc_read(CHANNEL_0);   <span class="cmt">// e.g. 0..4095 (12-bit)</span>
+float voltage = (raw / 4095.0f) * 3.3f; <span class="cmt">// convert to volts</span></div>
+                    <div class="tip-box"><strong>Interview tip</strong>You debugged ADC on the MSPM0 — a strong point. Mention polling vs interrupt mode and sequence mode for multi-channel reads if the interviewer digs deeper.</div>
+                </div>
+            </div>
+            
+            <div class="q-card" id="q15">
+                <h3 class="q-title"><span class="q-num">15</span> What is the purpose of DAC?</h3>
+                <div class="q-ans">
+                    <p>DAC = Digital to Analog Converter — the exact opposite of ADC. It turns a digital number from the CPU into a real analog voltage or current output.</p>
+                    <div class="example-box"><strong>Example</strong>Generating an audio waveform or a smooth reference voltage from code uses a DAC.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q16">
+                <h3 class="q-title"><span class="q-num">16</span> What is DMA?</h3>
+                <div class="q-ans">
+                    <p>DMA = Direct Memory Access. It moves data between memory and peripherals WITHOUT bothering the CPU. The CPU sets it up once, then is free to do other work while DMA copies data in the background.</p>
+                    <div class="example-box"><strong>Why it matters</strong>Moving a big ADC buffer or UART stream byte-by-byte with the CPU is slow. DMA does it automatically = faster and lower CPU load.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q17">
+                <h3 class="q-title"><span class="q-num">17</span> What is a Watchdog Timer?</h3>
+                <div class="q-ans">
+                    <p>A safety timer. If firmware hangs or gets stuck in a loop, the watchdog resets the whole system automatically. Your code must 'feed' (refresh) it regularly; if it stops feeding, the watchdog assumes a crash and reboots.</p>
+                    <div class="code-block">while (1) {
+  do_work();
+  watchdog_feed();   <span class="cmt">// must reach here in time, else RESET</span>
+}</div>
+                    <div class="tip-box"><strong>Interview tip</strong>Great safety talking point for EV chargers: 'If the main loop hangs, the watchdog reboots the charger to a safe state.'</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q18">
+                <h3 class="q-title"><span class="q-num">18</span> Difference between RAM and ROM?</h3>
+                <div class="q-ans">
+                    <table class="cmp">
+                        <tr><th>Feature</th><th>RAM</th><th>ROM</th></tr>
+                        <tr><td><strong>Volatility</strong></td><td>Volatile — data lost on power off</td><td>Non-volatile — keeps data</td></tr>
+                        <tr><td><strong>Usage</strong></td><td>Temporary working data, variables</td><td>Permanent code / constants</td></tr>
+                        <tr><td><strong>Speed</strong></td><td>Fast read & write</td><td>Mainly read</td></tr>
+                        <tr><td><strong>Role</strong></td><td>Runtime memory</td><td>Stores the firmware</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="q-card" id="q19">
+                <h3 class="q-title"><span class="q-num">19</span> What is Flash Memory?</h3>
+                <div class="q-ans">
+                    <p>Flash is non-volatile memory that can be electrically erased and rewritten. Your firmware is stored in Flash. It keeps data without power, but is erased in blocks (not single bytes).</p>
+                    <div class="example-box"><strong>Example</strong>When you flash a .hex/.bin into your MCU, it goes into Flash. The QSPI flash (W25Q64) you worked with is external flash.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q20">
+                <h3 class="q-title"><span class="q-num">20</span> What is EEPROM?</h3>
+                <div class="q-ans">
+                    <p>EEPROM is also non-volatile, but its special power is that you can read and write ONE byte at a time (Flash erases whole blocks). Perfect for small settings that change often.</p>
+                    <div class="example-box"><strong>Example</strong>Saving a charger's serial number, calibration value, or last-used settings so they survive a reboot.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q21">
+                <h3 class="q-title"><span class="q-num">21</span> Difference between Stack and Heap?</h3>
+                <div class="q-ans">
+                    <p>Both are areas of RAM. Stack is automatic and fast (function calls, local variables) and works in LIFO order — Last In, First Out. Heap is manual memory you request at runtime with malloc and must free yourself.</p>
+                    <div class="code-block">void func(void) {
+  int x = 5;                    <span class="cmt">// STACK: auto-freed on return</span>
+  int *p = malloc(100);         <span class="cmt">// HEAP: you must free it</span>
+  free(p);                      <span class="cmt">// else memory leak!</span>
+}</div>
+                    <div class="tip-box"><strong>Interview tip</strong>On MCUs say: 'We avoid heap/malloc in firmware because of fragmentation; we prefer static or stack allocation.' Interviewers love this.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q22">
+                <h3 class="q-title"><span class="q-num">22</span> What is the 'volatile' keyword in C?</h3>
+                <div class="q-ans">
+                    <p>'volatile' tells the compiler: 'This variable can change on its own, outside normal code flow — do NOT optimize it away, read it fresh every time.' Needed for hardware registers, ISR-shared variables, and memory-mapped I/O.</p>
+                    <div class="code-block">volatile uint8_t flag = 0;   <span class="cmt">// changed inside an ISR</span>
+ 
+void ISR(void) { flag = 1; }
+ 
+while (!flag) { }   <span class="cmt">// WITHOUT volatile, compiler may loop forever</span></div>
+                    <div class="tip-box"><strong>Interview tip</strong>Classic must-know question. One-liner: 'volatile stops the compiler from caching a value that hardware or an ISR can change.'</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q23">
+                <h3 class="q-title"><span class="q-num">23</span> What is the 'static' keyword in C?</h3>
+                <div class="q-ans">
+                    <p>'static' has two meanings. Inside a function: the variable keeps its value between calls (not reset each time). At file level: it limits the variable/function scope to that file only (private).</p>
+                    <div class="code-block">void counter(void) {
+  static int count = 0;  <span class="cmt">// keeps value across calls</span>
+  count++;               <span class="cmt">// 1, 2, 3, ...</span>
+}</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q24">
+                <h3 class="q-title"><span class="q-num">24</span> What is the 'const' keyword in C?</h3>
+                <div class="q-ans">
+                    <p>'const' makes a variable read-only after it is set. If code tries to change it, the compiler gives an error. It protects values from accidental modification and documents intent.</p>
+                    <div class="code-block">const float PI = 3.14159f;
+PI = 3.2f;   <span class="cmt">// ERROR: cannot modify a const</span></div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q25">
+                <h3 class="q-title"><span class="q-num">25</span> What is a State Machine?</h3>
+                <div class="q-ans">
+                    <p>A design pattern where the system is always in exactly ONE state, and it moves to another state based on events. Keeps complex behaviour clean and predictable — the backbone of most firmware.</p>
+                    <div class="code-block"><span class="cmt">// EV charger states example</span>
+switch (state) {
+  case IDLE:      if (plug_in)  state = CONNECTED;  break;
+  case CONNECTED: if (start)    state = CHARGING;   break;
+  case CHARGING:  if (stop)     state = IDLE;       break;
+}</div>
+                    <div class="tip-box"><strong>Interview tip</strong>Tie it to your work: 'An OCPP charging session is naturally a state machine — Available, Preparing, Charging, Finishing.'</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q26">
+                <h3 class="q-title"><span class="q-num">26</span> What is an ISR?</h3>
+                <div class="q-ans">
+                    <p>ISR = Interrupt Service Routine. The special function that runs automatically when an interrupt fires. Rule: keep it SHORT and FAST — just set a flag or read a value, and do heavy work in the main loop.</p>
+                    <div class="code-block">volatile bool data_ready = false;
+ 
+void UART_RX_ISR(void) {
+  buffer[i++] = read_byte();  <span class="cmt">// short & fast</span>
+  data_ready = true;          <span class="cmt">// main loop does the rest</span>
+}</div>
+                    <div class="tip-box"><strong>Interview tip</strong>Say what you should NOT do in an ISR: no delays, no printf, no malloc, no long loops.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q27">
+                <h3 class="q-title"><span class="q-num">27</span> What is the Bootloader?</h3>
+                <div class="q-ans">
+                    <p>A small program that runs FIRST at power-on, before the main firmware. It sets up basic hardware and then loads/starts the main application. It can also update firmware (a key feature).</p>
+                    <div class="example-box"><strong>Example</strong>Your MCU OTA update tool relies on a bootloader: it receives the new firmware over UART/USB, writes it to Flash, then jumps to the new app.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q28">
+                <h3 class="q-title"><span class="q-num">28</span> What are Low Power Modes?</h3>
+                <div class="q-ans">
+                    <p>Modes that reduce power by switching off or slowing down unused parts of the chip (CPU, clocks, peripherals). The MCU 'sleeps' and wakes up on an event like an interrupt. Essential for battery devices.</p>
+                    <div class="example-box"><strong>Common modes</strong>Sleep (CPU off, peripherals on), Stop/Deep-sleep (most clocks off), Standby (lowest power, almost everything off). Deeper sleep = less power but slower wake-up.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q29">
+                <h3 class="q-title"><span class="q-num">29</span> What is RTOS and its benefits?</h3>
+                <div class="q-ans">
+                    <p>RTOS = Real-Time Operating System. It lets firmware run many tasks 'at once' by quickly switching between them (scheduling), with predictable timing. You split the program into tasks with priorities.</p>
+                    <div class="example-box"><strong>Benefits</strong>Handles many jobs cleanly (read sensor, run UI, send data), guarantees high-priority tasks run on time, and gives ready tools like task delays, queues, and semaphores instead of one giant while-loop.</div>
+                    <div class="tip-box"><strong>Interview tip</strong>Name-drop one: 'I use FreeRTOS with tasks, queues, and semaphores.' Contrast with bare-metal (super-loop) if asked.</div>
+                </div>
+            </div>
+
+            <div class="q-card" id="q30">
+                <h3 class="q-title"><span class="q-num">30</span> Embedded C Best Practices?</h3>
+                <div class="q-ans">
+                    <p>Habits that make firmware safe and readable:</p>
+                    <ul style="margin: 10px 0 10px 20px; color: var(--muted);">
+                        <li>Use meaningful names (chargerState, not x).</li>
+                        <li>Avoid global variables; if needed, keep them minimal and controlled.</li>
+                        <li>Always check return values and error codes.</li>
+                        <li>Use fixed-width types (uint8_t, uint32_t) — sizes are guaranteed.</li>
+                        <li>Use const and volatile correctly.</li>
+                        <li>Keep ISRs short; avoid malloc/heap in firmware.</li>
+                        <li>Comment the WHY, not the obvious WHAT.</li>
+                    </ul>
+                    <div class="tip-box"><strong>Interview tip</strong>Add: 'We follow MISRA-C style guidelines and use a watchdog for safety' — shows real-world discipline.</div>
+                </div>
+            </div>
+
+            <!-- PART 2 -->
+            <h2 class="part-title" id="part2"><span>Part 2</span> Intermediate & Advanced Topics</h2>
+            
+            <div class="sub-sec" id="p2-a">
+                <h4>A. Communication Protocols (Deep Dive)</h4>
+                
+                <div class="q-card">
+                    <h3 class="q-title">A1. I2C — the full picture</h3>
+                    <div class="q-ans">
+                        <p>I2C is a 2-wire, synchronous, half-duplex protocol from Philips/NXP. Two shared wires — SDA (data) and SCL (clock) — connect many devices. Each device has a unique address. Both lines are open-drain, so they need pull-up resistors (2.2k–10k) to VCC.</p>
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li><strong>START:</strong> master pulls SDA HIGH→LOW while SCL is HIGH (begins a transfer).</li>
+                            <li><strong>STOP:</strong> SDA goes LOW→HIGH while SCL is HIGH (ends a transfer).</li>
+                            <li><strong>ACK (0):</strong> receiver pulls SDA LOW = 'got it'. <strong>NACK (1):</strong> SDA stays HIGH = wrong address, busy, or end of read.</li>
+                            <li><strong>Clock stretching:</strong> a slow slave holds SCL LOW to pause the master until it is ready.</li>
+                            <li><strong>Arbitration (multi-master):</strong> if two masters talk at once, the one sending 0 (dominant) wins; the other sees the mismatch and backs off. No data is corrupted.</li>
+                        </ul>
+                        <div class="code-block"><span class="cmt">// WRITE: START -> Addr+W -> ACK -> Data -> ACK -> STOP
+// READ : START -> Addr+R -> ACK -> Data -> ACK ... -> NACK -> STOP</span>
+i2c_read_reg(0x68, 0x3B);  <span class="cmt">// read reg 0x3B from device at addr 0x68</span></div>
+                        <div class="tip-box"><strong>Interview tip</strong>Why open-drain? It allows many devices on one bus without shorting, and enables the wired-AND logic that makes arbitration and clock stretching work. Classic follow-up: 'ACK = 0, NACK = 1.'</div>
+                    </div>
+                </div>
+
+                <div class="q-card">
+                    <h3 class="q-title">A2. SPI — the full picture</h3>
+                    <div class="q-ans">
+                        <p>SPI is a synchronous, full-duplex protocol for fast, short-distance links. One master, one or more slaves. Data goes both ways at the same time on separate wires.</p>
+                        <p><strong>The 4 signals:</strong> SCK (clock), MOSI (Master Out Slave In), MISO (Master In Slave Out), SS/CS (Slave Select - active LOW).</p>
+                        <table class="cmp">
+                            <tr><th>Mode (CPOL,CPHA)</th><th>Clock idle</th><th>Data sampled on</th></tr>
+                            <tr><td>0 (0,0)</td><td>Low</td><td>Rising edge</td></tr>
+                            <tr><td>1 (0,1)</td><td>Low</td><td>Falling edge</td></tr>
+                            <tr><td>2 (1,0)</td><td>High</td><td>Falling edge</td></tr>
+                            <tr><td>3 (1,1)</td><td>High</td><td>Rising edge</td></tr>
+                        </table>
+                        <div class="code-block">cs_low(SLAVE1);              <span class="cmt">// select slave</span>
+uint8_t rx = spi_transfer(0x9F); <span class="cmt">// send & receive in one shot</span>
+cs_high(SLAVE1);            <span class="cmt">// deselect</span></div>
+                        <div class="tip-box"><strong>Interview tip</strong>Pro tip: always match CPOL/CPHA between master and slave, or you read garbage. SPI vs I2C: SPI is faster and full-duplex but uses more pins and has no addressing (uses CS lines instead).</div>
+                    </div>
+                </div>
+
+                <div class="q-card">
+                    <h3 class="q-title">A3. CAN Bus — the automotive/EV backbone</h3>
+                    <div class="q-ans">
+                        <p>CAN (Controller Area Network) is a robust, multi-master, differential 2-wire bus (CAN_H, CAN_L) used to connect ECUs without a central computer. Priority is decided by the message ID: lower ID = higher priority. A 0 bit is 'dominant' and overwrites a 1 bit ('recessive') — that is how arbitration works.</p>
+                        <table class="cmp">
+                            <tr><th>CAN 2.0A (Standard)</th><th>CAN 2.0B (Extended)</th></tr>
+                            <tr><td>11-bit identifier (2,048 IDs)</td><td>29-bit identifier (536 million IDs)</td></tr>
+                            <tr><td>IDE bit = 0</td><td>IDE bit = 1</td></tr>
+                            <tr><td>Passenger cars, sensors</td><td>BMS, EVs, SAE J1939 trucks</td></tr>
+                        </table>
+                        <div class="code-block"><span class="cmt">// BMS -> VCU, ID 0x18FF50E5, Data: 0F 91 00 7D ...
+// Byte0-1 = 0x0F91 = 3985 -> 398.5 V  (battery voltage)
+// Byte2-3 = 0x007D = 125  -> 125 A    (battery current)</span></div>
+                        <div class="tip-box"><strong>Interview tip</strong>Strong EV talking point: 'Lower CAN ID wins arbitration because dominant 0 overwrites recessive 1; we use extended 29-bit IDs for BMS/charger messages, similar to SAE J1939.'</div>
+                    </div>
+                </div>
+
+                <div class="q-card">
+                    <h3 class="q-title">A4. UDS + ISO-TP over CAN</h3>
+                    <div class="q-ans">
+                        <p>Think of it as a road and a language: CAN is the road (moves the bytes), UDS is the language spoken on it (what the bytes mean — a diagnostic service). CAN just transports; it doesn't understand the request.</p>
+                        <p><strong>ISO-TP for big messages:</strong> A single classic CAN frame carries only 8 bytes. If the answer (like a VIN) is bigger, ISO-TP (ISO 15765-2) automatically splits it into a First Frame (FF), Flow Control (FC), and Consecutive Frames (CF), and the tester reassembles them.</p>
+                        <div class="tip-box"><strong>Interview tip</strong>One-liner: 'CAN transports, ISO-TP segments, UDS defines the service. Together they are the foundation of vehicle diagnostics.'</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-sec" id="p2-b">
+                <h4>B. Core Peripherals & Embedded C</h4>
+                
+                <div class="q-card">
+                    <h3 class="q-title">B1. GPIO & Pull-up / Pull-down resistors</h3>
+                    <div class="q-ans">
+                        <p>Inside the MCU each GPIO has a Direction register (0 = input, 1 = output), a Data (output) register, and an Input register. As output you write the data register to drive the pin HIGH/LOW; as input you read the input register to sense the level.</p>
+                        <p><strong>The floating-pin problem:</strong> An input pin connected only to an open switch is 'floating' — it picks up noise and reads random 0s and 1s. A pull resistor fixes the pin to a known level when the switch is open.</p>
+                        <table class="cmp">
+                            <tr><th>Resistor</th><th>Switch OPEN (idle)</th><th>Switch PRESSED</th></tr>
+                            <tr><td><strong>Pull-up</strong></td><td>≈ VCC → HIGH (1)</td><td>≈ 0V → LOW (0)</td></tr>
+                            <tr><td><strong>Pull-down</strong></td><td>≈ 0V → LOW (0)</td><td>≈ VCC → HIGH (1)</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="q-card">
+                    <h3 class="q-title">B2. ADC in depth</h3>
+                    <div class="q-ans">
+                        <p>An ADC converts a real analog voltage into a digital number. It works in 4 steps: Sample (grab the value), Hold (keep it steady), Quantize (snap to nearest level), Encode (output binary).</p>
+                        <div class="code-block"><span class="cmt">// The two formulas you must know:</span>
+LSB (step size) = Vref / 2^n        <span class="cmt">// smallest voltage it can see</span>
+Digital code    = Vin  / LSB        <span class="cmt">// the number you read</span>
+
+<span class="cmt">// Worked example (Vref = 3.3 V, 12-bit, Vin = 1.65 V)</span>
+LSB  = 3.3 / 4096      = 0.000805 V  <span class="cmt">// (0.805 mV)</span>
+code = 1.65 / 0.000805 = 2048        <span class="cmt">// (half scale, as expected)</span></div>
+                    </div>
+                </div>
+
+                <div class="q-card">
+                    <h3 class="q-title">B3. Bitwise operators in C</h3>
+                    <div class="q-ans">
+                        <p>Firmware constantly sets/clears single bits in hardware registers. These operators work on the binary bits of a value.</p>
+                        <div class="code-block"><span class="cmt">// The 4 things you do to a register</span>
+reg |=  (1 << n);      <span class="cmt">// SET   bit n to 1</span>
+reg &= ~(1 << n);      <span class="cmt">// CLEAR bit n to 0</span>
+reg ^=  (1 << n);      <span class="cmt">// TOGGLE bit n</span>
+if (reg & (1 << n))    <span class="cmt">// CHECK if bit n is 1</span>
+val = reg & MASK;      <span class="cmt">// MASK  isolate specific bits</span></div>
+                        <div class="tip-box"><strong>Interview tip</strong>This is the single most-used skill in firmware. Memorise set/clear/toggle/check by heart — interviewers often ask you to write them on the spot.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-sec" id="p2-c">
+                <h4>C. CPU Efficiency & Timing</h4>
+                
+                <div class="q-card">
+                    <h3 class="q-title">C1. Polling vs Interrupt vs DMA</h3>
+                    <div class="q-ans">
+                        <table class="cmp">
+                            <tr><th>Method</th><th>How it works</th><th>CPU Load</th></tr>
+                            <tr><td><strong>Polling</strong></td><td>CPU keeps checking</td><td>High (wastes cycles)</td></tr>
+                            <tr><td><strong>Interrupt</strong></td><td>Device notifies CPU</td><td>Moderate</td></tr>
+                            <tr><td><strong>DMA</strong></td><td>Hardware moves data</td><td>Very low</td></tr>
+                        </table>
+                        <p>One-liner: polling checks, interrupts notify, DMA transfers.</p>
+                    </div>
+                </div>
+                <div class="q-card">
+                    <h3 class="q-title">C2. Quick-fire concepts</h3>
+                    <div class="q-ans">
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li><strong>Run code from Flash vs SRAM:</strong> Flash is non-volatile (keeps code); SRAM is volatile (used for runtime data).</li>
+                            <li><strong>XIP (Execute-In-Place):</strong> CPU runs code directly from Flash without copying to RAM. Saves RAM and boot time.</li>
+                            <li><strong>SysTick:</strong> A built-in timer in ARM Cortex-M that fires periodic interrupts. Used for RTOS scheduling.</li>
+                            <li><strong>Clock gating:</strong> Turns off the clock to unused peripherals to save power.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-sec" id="p2-d">
+                <h4>D. Bootloader & Firmware Update</h4>
+                <div class="q-card">
+                    <h3 class="q-title">D1. Bootloader & the update process</h3>
+                    <div class="q-ans">
+                        <p>A bootloader is a small protected program that runs FIRST at power-on. It decides: run the existing app, or enter update mode to receive new firmware.</p>
+                        <div class="code-block">POWER ON -> BOOTLOADER -> Update requested?
+   NO  -> jump to Application (firmware)
+   YES -> receive new FW -> verify (CRC) -> write to Flash -> jump</div>
+                        <p><strong>Windowed vs Non-windowed Watchdog:</strong> Non-windowed can be refreshed any time before timeout. Windowed must be refreshed only inside a specific time window (more secure, detects early AND late refresh).</p>
+                        <div class="tip-box"><strong>Interview tip</strong>Direct match to your MCU OTA tool: mention verify-before-jump, a backup image for rollback, and keeping the bootloader in a protected region.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-sec" id="p2-e">
+                <h4>E. RTOS & Task Scheduling</h4>
+                <div class="q-card">
+                    <h3 class="q-title">E1. Task scheduling</h3>
+                    <div class="q-ans">
+                        <p>Scheduling decides which task runs, when, and for how long. Two families:</p>
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li><strong>Cooperative:</strong> each task voluntarily gives up the CPU. Simple, low overhead, but can block everything.</li>
+                            <li><strong>Preemptive:</strong> a higher-priority task can interrupt a lower one. Fast response, ideal for real-time.</li>
+                        </ul>
+                        <p><strong>Task states:</strong> READY → RUNNING → BLOCKED/WAITING → back to READY. The scheduler always runs the highest-priority READY task.</p>
+                    </div>
+                </div>
+                <div class="q-card">
+                    <h3 class="q-title">E2. RTOS synchronization mechanisms</h3>
+                    <div class="q-ans">
+                        <ul style="margin: 10px 0 10px 20px;">
+                            <li><strong>Mutex:</strong> a lock with ownership. Best for protecting shared data.</li>
+                            <li><strong>Semaphore:</strong> a signaling counter. Binary = signal an event; Counting = manage N resources.</li>
+                            <li><strong>Queue:</strong> a FIFO mailbox — one task sends messages, another receives them.</li>
+                            <li><strong>Event flags:</strong> a set of bits where a task can wait for one or several events to occur.</li>
+                        </ul>
+                        <div class="code-block">xSemaphoreTake(mutex, portMAX_DELAY);  <span class="cmt">// lock</span>
+shared_value++;                        <span class="cmt">// safe critical section</span>
+xSemaphoreGive(mutex);                 <span class="cmt">// unlock</span></div>
+                        <div class="tip-box"><strong>Interview tip</strong>The classic question: mutex vs semaphore? Mutex has ownership and is for protecting a resource; a semaphore is for signaling/counting and has no owner.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-sec" id="p2-f">
+                <h4>F. Device Drivers (Bare-metal & Linux)</h4>
+                <div class="q-card">
+                    <h3 class="q-title">F1. What is a device driver?</h3>
+                    <div class="q-ans">
+                        <p>A driver is a software layer that sits between the application and a hardware peripheral. The app calls simple functions; the driver does the register-level work underneath.</p>
+                    </div>
+                </div>
+                <div class="q-card">
+                    <h3 class="q-title">F2. Linux driver model & loading lifecycle</h3>
+                    <div class="q-ans">
+                        <p>In Linux, three things bind together: a Device, a Driver, and a Bus. The kernel matches a driver to a device, then calls the driver's probe() to set it up. remove() cleans up when it unbinds.</p>
+                        <div class="code-block"><span class="cmt">// Loading lifecycle</span>
+1. Write driver.c (define probe, remove, file_ops)
+2. make  ->  driver.ko
+3. sudo insmod driver.ko
+4. Kernel matches device (Device Tree / ACPI / USB IDs)
+5. probe() runs: request GPIOs/IRQs, map I/O
+6. /dev/mydevice node created
+7. User space uses open/read/write on /dev/mydevice
+8. sudo rmmod driver -> remove() frees memory, IRQs</div>
+                        <div class="tip-box"><strong>Interview tip</strong>Direct match to your i.MX93 embedded-Linux work: mention Device Tree matching, probe()/remove(), and 'proper cleanup in remove() prevents resource leaks.'</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q-card" style="border-color: var(--ch2);" id="strategy">
+                <h3 class="q-title" style="color: var(--ch2);">Quick Revision Strategy</h3>
+                <div class="q-ans">
+                    <ol style="margin: 10px 0 10px 20px; color: var(--muted); line-height: 1.8;">
+                        <li>Read all 30 answers once to refresh the concept.</li>
+                        <li>For each, prepare <strong>ONE real example</strong> from your own projects (EV charger, OCPP, ADC, OTA, RTOS). Personal examples beat textbook definitions.</li>
+                        <li>Practice saying each answer in 2–3 sentences out loud. Short and confident wins.</li>
+                        <li><strong>Master the 'must-know' set:</strong> volatile, interrupt vs polling vs DMA, stack vs heap, state machine, mutex vs semaphore, I2C ACK/NACK & arbitration, SPI modes, CAN arbitration, and the bootloader verify-then-jump flow.</li>
+                        <li>Part 2 topics (CAN, RTOS, ADC, bootloader, Linux drivers) map directly to your Tirex EV-charger and i.MX93 work — lead with those real examples and you'll stand out.</li>
+                    </ol>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="wrap" style="border-top: 1px solid var(--line); padding: 36px 0; font-family: var(--mono); font-size: 13px; color: var(--muted)">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px">
+            <span>© 2026 CrackEmbedded · Open Source Learning Platform</span>
+            <span><a href="https://github.com/kundantirex" target="_blank" rel="noopener">github.com/kundantirex</a></span>
+        </div>
+    </footer>
+
+</body>
+</html>
